@@ -29,12 +29,20 @@ extension ReloadableViewLayoutAdapter: UITableViewDelegate {
 
     /// - Warning: Subclasses that override this method must call super
     open func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        return renderLayout(currentArrangement[section].header, tableView: tableView)
+        let header = renderLayout(currentArrangement[section].header, tableView: tableView)
+        if let header = header {
+            cellCreationDelegate?.didCreate(header: header, inSection: section)
+        }
+        return header
     }
 
     /// - Warning: Subclasses that override this method must call super
     open func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-        return renderLayout(currentArrangement[section].footer, tableView: tableView)
+        let footer = renderLayout(currentArrangement[section].footer, tableView: tableView)
+        if let footer = footer {
+            cellCreationDelegate?.didCreate(footer: footer, inSection: section)
+        }
+        return footer
     }
 
     private func renderLayout(_ layout: LayoutArrangement?, tableView: UITableView) -> UIView? {
@@ -74,6 +82,9 @@ extension ReloadableViewLayoutAdapter: UITableViewDataSource {
         let item = currentArrangement[indexPath.section].items[indexPath.item]
         let cell = tableView.dequeueReusableCell(withIdentifier: reuseIdentifier, for: indexPath)
         item.makeViews(in: cell.contentView)
+
+        cellCreationDelegate?.didCreate(cell: cell, at: indexPath)
+
         return cell
     }
 }

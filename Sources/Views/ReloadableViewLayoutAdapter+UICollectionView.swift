@@ -47,6 +47,9 @@ extension ReloadableViewLayoutAdapter: UICollectionViewDataSource {
         let item = currentArrangement[indexPath.section].items[indexPath.item]
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath)
         item.makeViews(in: cell.contentView)
+
+        cellCreationDelegate?.didCreate(cell: cell, at: indexPath)
+
         return cell
     }
 
@@ -64,6 +67,13 @@ extension ReloadableViewLayoutAdapter: UICollectionViewDataSource {
             assertionFailure("unknown supplementary view kind \(kind)")
         }
         arrangement?.makeViews(in: view)
+
+        if kind == UICollectionElementKindSectionHeader {
+            cellCreationDelegate?.didCreate(header: view, inSection: indexPath.section)
+        } else if kind == UICollectionElementKindSectionFooter {
+            cellCreationDelegate?.didCreate(footer: view, inSection: indexPath.section)
+        }
+
         return view
     }
 }

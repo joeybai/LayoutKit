@@ -9,11 +9,22 @@
 import UIKit
 
 /**
+ Delegate for responding to cell, header, and footer view creations.
+ */
+public protocol ReloadableViewCellCreationDelegate: class {
+    func didCreate(cell: UIView, at indexPath: IndexPath)
+    func didCreate(header: UIView, inSection section: Int)
+    func didCreate(footer: UIView, inSection section: Int)
+}
+
+/**
  Manages background layout for reloadable views, including UICollectionView and UITableView.
 
  Set it as a UICollectionView or UITableView's dataSource and delegate.
  */
 open class ReloadableViewLayoutAdapter: NSObject, ReloadableViewUpdateManagerDelegate {
+
+    weak var cellCreationDelegate: ReloadableViewCellCreationDelegate?
 
     let reuseIdentifier = String(describing: ReloadableViewLayoutAdapter.self)
 
@@ -37,8 +48,9 @@ open class ReloadableViewLayoutAdapter: NSObject, ReloadableViewUpdateManagerDel
     /// Logs messages.
     open var logger: ((String) -> Void)? = nil
 
-    public init(reloadableView: ReloadableView) {
+    public init(reloadableView: ReloadableView, cellCreationDelegate: ReloadableViewCellCreationDelegate? = nil) {
         self.reloadableView = reloadableView
+        self.cellCreationDelegate = cellCreationDelegate
         reloadableView.registerViews(withReuseIdentifier: reuseIdentifier)
     }
 
